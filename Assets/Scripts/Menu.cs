@@ -13,6 +13,7 @@ public class Menu : NetworkDiscovery
     string serverName;
     
 
+
     private void Start()
     {
         networkManager = GameObject.Find("NetworkManager").GetComponent<NetworkManager>();

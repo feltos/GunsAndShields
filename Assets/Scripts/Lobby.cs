@@ -15,8 +15,14 @@ public class Lobby : MonoBehaviour
     Text inputFieldText;
     [SerializeField]
     Text nameOfServer;
+    Menu menu;
 
-   public string GetUserServName()
+    private void Start()
+    {
+        menu = gameObject.GetComponent<Menu>();
+    }
+
+    public string GetUserServName()
     {
         return inputFieldText.text;
     }
@@ -36,5 +42,6 @@ public class Lobby : MonoBehaviour
     {
         BaseCanvas.SetActive(false);
         clientCanvas.SetActive(true);
+        menu.JoinServer();
     }
 }

@@ -24,9 +24,8 @@ public class PlayerCharacter : NetworkBehaviour
     GameObject bulletSpawn;
     [SerializeField][SyncVar]int playerID  = -1;
 
-    [SerializeField]
+    [SerializeField]protected
     int health;
-
 
     public int PlayerID
     {
@@ -39,6 +38,11 @@ public class PlayerCharacter : NetworkBehaviour
         {
             playerID = value;
         }
+    }
+
+    public int getHealth()
+    {
+        return health;
     }
 
     void Start ()
@@ -68,11 +72,15 @@ public class PlayerCharacter : NetworkBehaviour
       
         if(Input.GetButtonDown("Fire1"))
         {
-            CmdShoot(bulletSpawn.transform.position,bulletSpawn.transform.rotation);
+            CmdShoot(bulletSpawn.transform.position,camera.transform.rotation);
         }
 
         transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X"), 0) * Time.deltaTime * rotateSpeed);
         camera.transform.Rotate(new Vector3(-Input.GetAxis("Mouse Y"), 0, 0) * Time.deltaTime * rotateSpeed);
+        if(health <= 0)
+        {
+            Die();
+        }
     }
 
     public override void OnStartLocalPlayer()
@@ -80,15 +88,23 @@ public class PlayerCharacter : NetworkBehaviour
         camera.SetActive(true);
     }
 
-    void FixedUpdate()
-    {
-       
-    }
-
     [Command]
     void CmdShoot(Vector3 bulletSpawnPos,Quaternion bulletSpawnRot)
     {
         tempBullet = Instantiate(bullet,bulletSpawnPos,bulletSpawnRot);
         NetworkServer.Spawn(tempBullet);
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+      if(other.gameObject.layer == LayerMask.NameToLayer("Bullet"))
+        {
+            health -= 10;
+            Destroy(other.gameObject);
+        }
+    }
+    void Die()
+    {
+        Debug.Log("Hit THIS");
     }
 }
