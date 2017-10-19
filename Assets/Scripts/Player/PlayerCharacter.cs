@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using UnityEngine.UI;
 
 public class PlayerCharacter : NetworkBehaviour
 {
@@ -29,10 +30,14 @@ public class PlayerCharacter : NetworkBehaviour
     PlayerChilds []playerChilds;
     const int firstChild = 0;
     [SyncVar]
-    int bulletRemaining = 1000;
+    int bulletRemaining = 25;
     bool die = false;
 
     Vector3 movedirection = Vector3.zero;
+    [SerializeField]
+    Canvas playerUI;
+    [SerializeField]
+    Canvas gameOverUI;
 
     public int PlayerID
     {
@@ -52,7 +57,15 @@ public class PlayerCharacter : NetworkBehaviour
         return health;
     }
 
+    public int SetHealth()
+    {
+        return health -= 10;
+    }
 
+    public int GetBulletRemaining()
+    {
+        return bulletRemaining;
+    }
 
     void Start ()
     {      
@@ -92,7 +105,11 @@ public class PlayerCharacter : NetworkBehaviour
             {
                 Die();
             }
-            movedirection.y -= gravity * Time.deltaTime;
+            if(controller.isGrounded == false)
+            {
+                movedirection.y -= gravity * Time.deltaTime;
+            }
+            
             controller.Move(movedirection);
             controller.SimpleMove(forward + v);
         }     
@@ -101,6 +118,8 @@ public class PlayerCharacter : NetworkBehaviour
     public override void OnStartLocalPlayer()
     {
         camera.SetActive(true);
+        playerUI.gameObject.SetActive(true);
+        gameOverUI.gameObject.SetActive(false);
     }
 
     [Command]
@@ -111,16 +130,17 @@ public class PlayerCharacter : NetworkBehaviour
         bulletRemaining--;
     }
 
+    [ServerCallback]
     private void OnTriggerEnter(Collider other)
     {
       if(other.gameObject.layer == LayerMask.NameToLayer("Bullet"))
         {
-            health -= 10;
-            Destroy(other.gameObject);
+            SetHealth();
+            NetworkServer.Destroy(other.gameObject);
         }
       if(other.gameObject.layer == LayerMask.NameToLayer("MunBox"))
         {
-            bulletRemaining = 5;
+            bulletRemaining = 25;
         }
     }
     void Die()
@@ -129,6 +149,8 @@ public class PlayerCharacter : NetworkBehaviour
         die = true;
         CmdSetDie(die);
         RpcDeathPlayer();
+        playerUI.gameObject.SetActive(false);
+        gameOverUI.gameObject.SetActive(true);
     }
 
     [Command]

@@ -20,5 +20,6 @@ public class PlayerChilds : MonoBehaviour
         body.useGravity = true;
         body.isKinematic = false;
     }
+
 }
 
