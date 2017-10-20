@@ -18,7 +18,7 @@ public class PlayerCharacter : NetworkBehaviour
     Vector3 forward;
     Vector3 v;
     [SerializeField]
-    GameObject camera;
+    Camera camera;
     [SerializeField]float gravity;
     [SerializeField]float jumpSpeed;
     [SerializeField]
@@ -83,6 +83,7 @@ public class PlayerCharacter : NetworkBehaviour
         }
         if(!die)
         {
+            Aim();
             horizontal = Input.GetAxis("Horizontal");
             vertical = Input.GetAxis("Vertical");
 
@@ -97,9 +98,7 @@ public class PlayerCharacter : NetworkBehaviour
 
             if (Input.GetButtonDown("Fire1") && bulletRemaining > 0)
             {
-                Vector3 velocity = bulletSpawn.transform.position - lastPosition;
-                velocity /= Time.deltaTime;
-                CmdShoot(camera.transform.position, camera.transform.forward,velocity);
+                CmdShoot();
             }
 
             transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X"), 0) * Time.deltaTime * rotateSpeed);
@@ -121,25 +120,11 @@ public class PlayerCharacter : NetworkBehaviour
 
     public override void OnStartLocalPlayer()
     {
-        camera.SetActive(true);
+        camera.gameObject.SetActive(true);
         playerUI.gameObject.SetActive(true);
         gameOverUI.gameObject.SetActive(false);
     }
 
-    [Command]
-    void CmdShoot(Vector3 bulletSpawnPos,Vector3 bulletSpawnRot,Vector3 velocity)
-    {
-        float ping = NetworkManager.singleton.client.GetRTT() / 1000.0f;
-        if(ping <= 0.01f && !isLocalPlayer)
-        {
-            ping = Time.deltaTime * 2;
-        }
-        Vector3 compensation = velocity * ping;
-        tempBullet = Instantiate(bullet,bulletSpawnPos + compensation,Quaternion.identity);
-        tempBullet.GetComponent<Bullet>().direction = bulletSpawnRot;
-        NetworkServer.Spawn(tempBullet);
-        bulletRemaining--;
-    }
 
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
@@ -177,6 +162,29 @@ public class PlayerCharacter : NetworkBehaviour
         foreach(PlayerChilds child in playerChilds)
         {
             child.Death();
+        }
+    }
+
+    [Command]
+    void CmdShoot()
+    {
+        tempBullet = Instantiate(bullet, bulletSpawn.transform.position, bulletSpawn.transform.rotation);
+        tempBullet.GetComponent<Bullet>().direction = bulletSpawn.transform.forward;
+        NetworkServer.Spawn(tempBullet);
+        bulletRemaining--;
+    }
+
+    void Aim()
+    {
+        float screenX = Screen.width / 2;
+        float screenY = Screen.height / 2;
+
+        RaycastHit hit;
+        Ray ray = camera.ScreenPointToRay(new Vector3(screenX, screenY));
+
+        if(Physics.Raycast(ray, out hit))
+        {
+            bulletSpawn.transform.LookAt(hit.point);
         }
     }
 }

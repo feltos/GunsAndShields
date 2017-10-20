@@ -11,7 +11,7 @@ public class Bullet : MonoBehaviour
 	void Start ()
     {
         Destroy(gameObject, 5f);
-        gameObject.GetComponent<Rigidbody>().AddForce(direction * force);
+        gameObject.GetComponent<Rigidbody>().velocity = direction * force;
 	}
 	
 	
