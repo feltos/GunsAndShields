@@ -6,11 +6,12 @@ public class Bullet : MonoBehaviour
 {
 
     [SerializeField]int force;
+    public Vector3 direction;
 
 	void Start ()
     {
         Destroy(gameObject, 5f);
-        gameObject.GetComponent<Rigidbody>().AddForce(gameObject.transform.forward * force);
+        gameObject.GetComponent<Rigidbody>().AddForce(direction * force);
 	}
 	
 	

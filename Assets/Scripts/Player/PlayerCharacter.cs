@@ -38,6 +38,7 @@ public class PlayerCharacter : NetworkBehaviour
     Canvas playerUI;
     [SerializeField]
     Canvas gameOverUI;
+    Vector3 lastPosition;
 
     public int PlayerID
     {
@@ -96,7 +97,9 @@ public class PlayerCharacter : NetworkBehaviour
 
             if (Input.GetButtonDown("Fire1") && bulletRemaining > 0)
             {
-                CmdShoot(bulletSpawn.transform.position, camera.transform.rotation);
+                Vector3 velocity = bulletSpawn.transform.position - lastPosition;
+                velocity /= Time.deltaTime;
+                CmdShoot(camera.transform.position, camera.transform.forward,velocity);
             }
 
             transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X"), 0) * Time.deltaTime * rotateSpeed);
@@ -112,6 +115,7 @@ public class PlayerCharacter : NetworkBehaviour
             
             controller.Move(movedirection);
             controller.SimpleMove(forward + v);
+            lastPosition = bulletSpawn.transform.position;
         }     
     }
 
@@ -123,9 +127,16 @@ public class PlayerCharacter : NetworkBehaviour
     }
 
     [Command]
-    void CmdShoot(Vector3 bulletSpawnPos,Quaternion bulletSpawnRot)
+    void CmdShoot(Vector3 bulletSpawnPos,Vector3 bulletSpawnRot,Vector3 velocity)
     {
-        tempBullet = Instantiate(bullet,bulletSpawnPos,bulletSpawnRot);
+        float ping = NetworkManager.singleton.client.GetRTT() / 1000.0f;
+        if(ping <= 0.01f && !isLocalPlayer)
+        {
+            ping = Time.deltaTime * 2;
+        }
+        Vector3 compensation = velocity * ping;
+        tempBullet = Instantiate(bullet,bulletSpawnPos + compensation,Quaternion.identity);
+        tempBullet.GetComponent<Bullet>().direction = bulletSpawnRot;
         NetworkServer.Spawn(tempBullet);
         bulletRemaining--;
     }
