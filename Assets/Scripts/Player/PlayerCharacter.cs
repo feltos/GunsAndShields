@@ -76,7 +76,6 @@ public class PlayerCharacter : NetworkBehaviour
 	
 	void Update ()
     {
-        Debug.Log(die);
         if(!isLocalPlayer)
         {
             return;

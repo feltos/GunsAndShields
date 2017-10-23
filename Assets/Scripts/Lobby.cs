@@ -44,4 +44,11 @@ public class Lobby : MonoBehaviour
         clientCanvas.SetActive(true);
         menu.JoinServer();
     }
+
+    public void Return()
+    {
+        clientCanvas.SetActive(false);
+        hostCanvas.SetActive(false);
+        BaseCanvas.SetActive(true);
+    }
 }

@@ -19,6 +19,7 @@ public class PlayerChilds : MonoBehaviour
         gameObject.transform.parent = null;
         body.useGravity = true;
         body.isKinematic = false;
+        body.AddExplosionForce(50,transform.position,30,20);
     }
 
 }
