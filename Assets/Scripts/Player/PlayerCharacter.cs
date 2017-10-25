@@ -167,7 +167,7 @@ public class PlayerCharacter : NetworkBehaviour
     [Command]
     void CmdShoot()
     {
-        tempBullet = Instantiate(bullet, bulletSpawn.transform.position, bulletSpawn.transform.rotation);
+        tempBullet = Instantiate(bullet, bulletSpawn.transform.position, camera.transform.rotation);
         tempBullet.GetComponent<Bullet>().direction = bulletSpawn.transform.forward;
         NetworkServer.Spawn(tempBullet);
         bulletRemaining--;
