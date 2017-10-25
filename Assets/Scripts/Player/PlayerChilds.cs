@@ -14,6 +14,7 @@ public class PlayerChilds : MonoBehaviour
 
     public void Death()
     {
+        //permet l'explosion du corps lors de la mort
         gameObject.transform.parent = null;
         body.useGravity = true;
         body.isKinematic = false;

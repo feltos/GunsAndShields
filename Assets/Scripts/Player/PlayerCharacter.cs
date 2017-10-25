@@ -38,6 +38,7 @@ public class PlayerCharacter : NetworkBehaviour
     Canvas playerUI;
     [SerializeField]
     Canvas gameOverUI;
+    [SerializeField]GameObject head;
 
 
     public int PlayerID
@@ -99,7 +100,7 @@ public class PlayerCharacter : NetworkBehaviour
             {
                 CmdShoot();
             }
-
+            //permet le déplacement et la rotation de la caméra
             transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X"), 0) * Time.deltaTime * rotateSpeed);
             camera.transform.Rotate(new Vector3(-Input.GetAxis("Mouse Y"), 0, 0) * Time.deltaTime * rotateSpeed);
            
@@ -115,6 +116,7 @@ public class PlayerCharacter : NetworkBehaviour
             
             controller.Move(movedirection);
             controller.SimpleMove(forward + v);
+            camera.transform.position = head.transform.position;
         }     
     }
 
@@ -172,7 +174,7 @@ public class PlayerCharacter : NetworkBehaviour
         NetworkServer.Spawn(tempBullet);
         bulletRemaining--;
     }
-
+    //gère le centrage lors du tir
     void Aim()
     {
         float screenX = Screen.width / 2;

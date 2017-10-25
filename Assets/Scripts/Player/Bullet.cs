@@ -10,7 +10,7 @@ public class Bullet : MonoBehaviour
 
 	void Start ()
     {
-        Destroy(gameObject, 5f);
+        Destroy(gameObject, 10f);
         gameObject.GetComponent<Rigidbody>().AddForce(direction * force);
 	}
 	
