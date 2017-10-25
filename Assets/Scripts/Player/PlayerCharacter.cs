@@ -38,7 +38,6 @@ public class PlayerCharacter : NetworkBehaviour
     Canvas playerUI;
     [SerializeField]
     Canvas gameOverUI;
-    Vector3 lastPosition;
 
     public int PlayerID
     {
@@ -113,7 +112,6 @@ public class PlayerCharacter : NetworkBehaviour
             
             controller.Move(movedirection);
             controller.SimpleMove(forward + v);
-            lastPosition = bulletSpawn.transform.position;
         }     
     }
 
