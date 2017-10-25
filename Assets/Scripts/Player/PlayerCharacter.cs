@@ -18,7 +18,7 @@ public class PlayerCharacter : NetworkBehaviour
     Vector3 forward;
     Vector3 v;
     [SerializeField]
-    Camera camera;
+    new Camera camera;
     [SerializeField]float gravity;
     [SerializeField]float jumpSpeed;
     [SerializeField]
@@ -38,6 +38,7 @@ public class PlayerCharacter : NetworkBehaviour
     Canvas playerUI;
     [SerializeField]
     Canvas gameOverUI;
+
 
     public int PlayerID
     {
@@ -101,11 +102,13 @@ public class PlayerCharacter : NetworkBehaviour
 
             transform.Rotate(new Vector3(0, Input.GetAxis("Mouse X"), 0) * Time.deltaTime * rotateSpeed);
             camera.transform.Rotate(new Vector3(-Input.GetAxis("Mouse Y"), 0, 0) * Time.deltaTime * rotateSpeed);
+           
             if (health <= 0 && !die)
             {
-                Die();
+                Die(); 
             }
-            if(controller.isGrounded == false)
+
+            if(!controller.isGrounded)
             {
                 movedirection.y -= gravity * Time.deltaTime;
             }
@@ -121,7 +124,6 @@ public class PlayerCharacter : NetworkBehaviour
         playerUI.gameObject.SetActive(true);
         gameOverUI.gameObject.SetActive(false);
     }
-
 
     [ServerCallback]
     private void OnTriggerEnter(Collider other)
