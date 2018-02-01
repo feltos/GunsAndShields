@@ -11,7 +11,7 @@ public class TargetSound : MonoBehaviour {
 
     public void PlaySoundTarget()
     {
-
+        GetComponent<AudioSource>().Play();
     }
 	
 	// Update is called once per frame

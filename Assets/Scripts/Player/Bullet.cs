@@ -20,6 +20,14 @@ public class Bullet : MonoBehaviour
 		
 	}
 
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.layer == LayerMask.NameToLayer("Target"))
+        {
+            collision.gameObject.GetComponent<TargetSound>().PlaySoundTarget();
+        }
+    }
+
     void FixedUpdate()
     {
 
